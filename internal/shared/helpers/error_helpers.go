@@ -1,0 +1,11 @@
+package helpers
+
+const ErrFailedToGetAllReport = "failed to get all report %v"
+const ErrFailedToGetAllReportByRouteName = "failed to get all report by report name %v"
+const ErrFailedToCreateReport = "failed to create report %v"
+const ErrFailedToUpdateReport = "failed to update report %v"
+const ErrFailedToDeleteReport = "failed to delete report %v"
+
+const ErrFailedToGetAllFilter = "failed to get all filter %v"
+const ErrFailedToCreateFilter = "failed to create filter %v"
+const ErrFailedToUpdateFilter = "failed to update filter %v"

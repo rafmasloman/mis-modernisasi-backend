@@ -1,0 +1,128 @@
+package usecase
+
+import (
+	"fmt"
+	"strconv"
+	"strings"
+
+	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/dto"
+	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/entity"
+	"github.com/rafmasloman/mis-modernisasi-backend/internal/infrastructure/repositories"
+)
+
+type ReportBuilderUsecase struct {
+	repo repositories.ReportBuilderRepositoryImpl
+}
+
+type ReportBuilderUsecaseImpl interface {
+	CreateReportBuilder(dto dto.DTOCreateReportBuilder) error
+	GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error)
+	DeleteReport(reportId string) error
+	UpdateReport(reportId string, dto dto.DTOCreateReportBuilder) error
+	GetAllReportBuilder() (*[]entity.ReportBuilder, error)
+}
+
+func NewReportBuilderUsecase(repo repositories.ReportBuilderRepositoryImpl) *ReportBuilderUsecase {
+	return &ReportBuilderUsecase{repo: repo}
+}
+
+func (u *ReportBuilderUsecase) CreateReportBuilder(dto dto.DTOCreateReportBuilder) error {
+
+	q := strings.ToLower(dto.Query)
+
+	if !strings.HasPrefix(strings.TrimSpace(q), "select") {
+		return fmt.Errorf(`only SELECT query allowed`)
+	}
+
+	reportData := entity.ReportBuilder{
+		Name:        dto.Name,
+		Query:       dto.Query,
+		RouteName:   dto.RouteName,
+		Description: dto.Description,
+		Columns:     dto.Columns,
+		IsActive:    dto.IsActive,
+	}
+
+	err := u.repo.CreateReportBuilder(reportData)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]entity.ReportBuilder, error) {
+
+	data, err := u.repo.GetAllReportBuilder()
+
+	if err != nil {
+		return nil, fmt.Errorf(`failed to fetch all report builder : %v `, err)
+	}
+
+	return data, nil
+
+}
+
+func (u *ReportBuilderUsecase) GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error) {
+	result, err := u.repo.GetReportByRouterName(routerName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	mappingToResponse := dto.DTOReportBuilderResponse{
+		ReportId:    result.ReportId,
+		Name:        result.Name,
+		Query:       result.Query,
+		RouteName:   result.RouteName,
+		Description: result.Description,
+		Columns:     result.Columns,
+		IsActive:    result.IsActive,
+		CreatedAt:   result.CreatedAt,
+		UpdatedAt:   result.UpdatedAt,
+	}
+
+	return &mappingToResponse, nil
+}
+
+func (u *ReportBuilderUsecase) DeleteReport(reportId string) error {
+
+	convertReportId, err := strconv.Atoi(reportId)
+
+	if err != nil {
+		return fmt.Errorf(`failed to convert: %v`, err)
+	}
+
+	if err := u.repo.DeleteReport(convertReportId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (u *ReportBuilderUsecase) UpdateReport(reportId string, dto dto.DTOCreateReportBuilder) error {
+
+	convertReportId, err := strconv.Atoi(reportId)
+
+	if err != nil {
+		return fmt.Errorf(`failed to convert: %v`, err)
+	}
+
+	payloadUpdate := entity.ReportBuilder{
+		Name:        dto.Name,
+		Query:       dto.Query,
+		RouteName:   dto.RouteName,
+		Description: dto.Description,
+		Columns:     dto.Columns,
+		IsActive:    dto.IsActive,
+	}
+
+	if err := u.repo.UpdateReport(convertReportId, payloadUpdate); err != nil {
+		return err
+	}
+
+	return nil
+
+}
