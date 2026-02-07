@@ -84,3 +84,70 @@ func (c *FilterBuilderController) GetFilterBuilderByReportId(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (c *FilterBuilderController) DeleteFilterBuilder(ctx *gin.Context) {
+
+	id := ctx.Query("id")
+
+	response := new(dto.ApiResponseDTO)
+
+	if err := c.usecase.DeleteFilterBuilder(id); err != nil {
+		response.Data = nil
+		response.ResponseCode = http.StatusBadGateway
+		response.Status = false
+		response.Message = helpers.ErrFailedToGetAllFilter
+		response.Timestamp = time.Now()
+
+		ctx.JSON(http.StatusBadGateway, response)
+
+		return
+	}
+
+	response.ResponseCode = http.StatusOK
+	response.Status = true
+	response.Message = "Success to delete filter"
+	response.Timestamp = time.Now()
+
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (c *FilterBuilderController) UpdateFilterBuilder(ctx *gin.Context) {
+
+	var payload dto.FilterBuilderDTO
+	response := new(dto.ApiResponseDTO)
+
+	id := ctx.Query("id")
+
+	if err := ctx.ShouldBindJSON(&payload); err != nil {
+		ctx.JSON(http.StatusBadRequest, dto.ApiResponseDTO{
+			ResponseCode: http.StatusBadRequest,
+			Status:       false,
+			Message:      helpers.ErrFailedToCreateReport,
+			Data:         nil,
+			Timestamp:    time.Now(),
+		})
+
+		return
+	}
+
+	err := c.usecase.UpdateFilterBuilder(id, payload)
+
+	if err != nil {
+		response.Data = nil
+		response.ResponseCode = http.StatusBadGateway
+		response.Status = false
+		response.Message = helpers.ErrFailedToGetAllFilter
+		response.Timestamp = time.Now()
+
+		ctx.JSON(http.StatusBadGateway, response)
+
+		return
+	}
+
+	response.ResponseCode = http.StatusOK
+	response.Status = true
+	response.Message = "Success to update filter builder"
+	response.Timestamp = time.Now()
+
+	ctx.JSON(http.StatusOK, response)
+}
