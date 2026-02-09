@@ -7,9 +7,9 @@ import (
 )
 
 type DTOCreateReportBuilder struct {
-	Name        string         `json:"name"`
-	Query       string         `json:"query"`
-	RouteName   string         `json:"route_name"`
+	Name        string         `json:"name" binding:"required"`
+	Query       string         `json:"query" binding:"required"`
+	RouteName   string         `json:"route_name" binding:"required"`
 	Description string         `json:"description"`
 	Columns     datatypes.JSON `json:"columns"`
 	IsActive    bool           `json:"is_active"`

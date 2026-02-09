@@ -14,6 +14,7 @@ type FilterBuilderRepository struct {
 
 type FilterBuilderRepositoryImpl interface {
 	CreateFilterBuilder(item entity.FilterBuilder) error
+	GetAllFilterBuilder() (*[]entity.FilterBuilder, error)
 	GetFilterBuilderByReportId(reportId int) (*[]entity.FilterBuilder, error)
 	DeleteFilterBuilder(id int) error
 	UpdateFilterBuilder(id int, item entity.FilterBuilder) error
@@ -21,6 +22,31 @@ type FilterBuilderRepositoryImpl interface {
 
 func NewFilterBuilderRepository(db *gorm.DB) *FilterBuilderRepository {
 	return &FilterBuilderRepository{db: db}
+}
+
+func (r *FilterBuilderRepository) GetAllFilterBuilder() (*[]entity.FilterBuilder, error) {
+	var model []model.FilterBuilderModel
+
+	if err := r.db.Table(`filter_builder`).Find(&model).Error; err != nil {
+		return nil, fmt.Errorf(`failed to find filter builders : %v`, err)
+	}
+
+	entities := make([]entity.FilterBuilder, 0, len(model))
+
+	for _, item := range model {
+		entities = append(entities, entity.FilterBuilder{
+			Name:     item.Name,
+			Query:    item.Query,
+			Title:    item.Title,
+			ReportId: item.ReportId,
+			Required: item.Required,
+			Type:     item.Type,
+			OrderNum: item.OrderNum,
+		})
+
+	}
+
+	return &entities, nil
 }
 
 func (r *FilterBuilderRepository) CreateFilterBuilder(item entity.FilterBuilder) error {
@@ -45,7 +71,9 @@ func (r *FilterBuilderRepository) CreateFilterBuilder(item entity.FilterBuilder)
 func (r *FilterBuilderRepository) GetFilterBuilderByReportId(reportId int) (*[]entity.FilterBuilder, error) {
 	var model []model.FilterBuilderModel
 
-	if err := r.db.Table(`report_builder`).Where(`route_name`).First(&model).Error; err != nil {
+	if err := r.db.Table(`filter_builder`).
+		Where(`report_id = ?`, reportId).
+		Find(&model).Error; err != nil {
 		return nil, fmt.Errorf(`failed to find filter %v`, err)
 	}
 

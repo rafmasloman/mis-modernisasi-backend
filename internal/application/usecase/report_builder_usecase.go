@@ -19,7 +19,7 @@ type ReportBuilderUsecaseImpl interface {
 	GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error)
 	DeleteReport(reportId string) error
 	UpdateReport(reportId string, dto dto.DTOCreateReportBuilder) error
-	GetAllReportBuilder() (*[]entity.ReportBuilder, error)
+	GetAllReportBuilder() (*[]dto.DTOReportBuilderResponse, error)
 }
 
 func NewReportBuilderUsecase(repo repositories.ReportBuilderRepositoryImpl) *ReportBuilderUsecase {
@@ -29,6 +29,10 @@ func NewReportBuilderUsecase(repo repositories.ReportBuilderRepositoryImpl) *Rep
 func (u *ReportBuilderUsecase) CreateReportBuilder(dto dto.DTOCreateReportBuilder) error {
 
 	q := strings.ToLower(dto.Query)
+
+	// if dto.Query == "" {
+	// 	return fmt.Errorf(`Query cannot be empty`)
+	// }
 
 	if !strings.HasPrefix(strings.TrimSpace(q), "select") {
 		return fmt.Errorf(`only SELECT query allowed`)
@@ -53,7 +57,7 @@ func (u *ReportBuilderUsecase) CreateReportBuilder(dto dto.DTOCreateReportBuilde
 
 }
 
-func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]entity.ReportBuilder, error) {
+func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]dto.DTOReportBuilderResponse, error) {
 
 	data, err := u.repo.GetAllReportBuilder()
 
@@ -61,7 +65,21 @@ func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]entity.ReportBuilder, e
 		return nil, fmt.Errorf(`failed to fetch all report builder : %v `, err)
 	}
 
-	return data, nil
+	entities := make([]dto.DTOReportBuilderResponse, 0, len(*data))
+
+	for _, item := range *data {
+		entities = append(entities, dto.DTOReportBuilderResponse{
+			ReportId:    item.ReportId,
+			Name:        item.Name,
+			Query:       item.Query,
+			RouteName:   item.RouteName,
+			Description: item.Description,
+			Columns:     item.Columns,
+			IsActive:    item.IsActive,
+		})
+	}
+
+	return &entities, nil
 
 }
 

@@ -29,6 +29,8 @@ func main() {
 
 	r := gin.Default()
 
+	config.CorsMiddleware(r)
+
 	v1 := r.Group("/api/v1/mis-new")
 
 	core.RegisterReportBuilderCore(v1, db)

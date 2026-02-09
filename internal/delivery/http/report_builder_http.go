@@ -1,6 +1,7 @@
 package http
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -29,6 +30,7 @@ func (c *ReportBuilderController) CreateReportBuilder(ctx *gin.Context) {
 			Message:      helpers.ErrFailedToCreateReport,
 			Data:         nil,
 			Timestamp:    time.Now(),
+			Error:        err.Error(),
 		})
 
 		return
@@ -37,11 +39,13 @@ func (c *ReportBuilderController) CreateReportBuilder(ctx *gin.Context) {
 	err := c.usecase.CreateReportBuilder(payload)
 
 	if err != nil {
+		log.Println("create report : %v ", err)
 		response.Data = nil
 		response.ResponseCode = http.StatusBadGateway
 		response.Status = false
 		response.Message = helpers.ErrFailedToCreateReport
 		response.Timestamp = time.Now()
+		response.Error = err.Error()
 
 		ctx.JSON(http.StatusBadGateway, response)
 
@@ -86,7 +90,7 @@ func (c *ReportBuilderController) GetAllReportBuilder(ctx *gin.Context) {
 
 func (c *ReportBuilderController) GetReportByRouterName(ctx *gin.Context) {
 	response := new(dto.ApiResponseDTO)
-	reportName := ctx.Query("report_name")
+	reportName := ctx.Param("reportName")
 
 	results, err := c.usecase.GetReportByRouterName(reportName)
 
@@ -114,7 +118,7 @@ func (c *ReportBuilderController) GetReportByRouterName(ctx *gin.Context) {
 func (c *ReportBuilderController) DeleteReportBuilder(ctx *gin.Context) {
 	response := new(dto.ApiResponseDTO)
 
-	reportId := ctx.Query("report_id")
+	reportId := ctx.Param("reportId")
 
 	err := c.usecase.DeleteReport(reportId)
 
@@ -144,7 +148,7 @@ func (c *ReportBuilderController) UpdateReportBuilder(ctx *gin.Context) {
 	var payload dto.DTOCreateReportBuilder
 	response := new(dto.ApiResponseDTO)
 
-	reportId := ctx.Query("report_id")
+	reportId := ctx.Param("reportId")
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
 		ctx.JSON(http.StatusBadRequest, dto.ApiResponseDTO{

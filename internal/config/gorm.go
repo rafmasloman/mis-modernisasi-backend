@@ -34,7 +34,7 @@ func GormApp() (*gorm.DB, error) {
 
 	// Migrate DB
 
-	// MigrateGorm(db)
+	MigrateGorm(db)
 
 	if err != nil {
 		panic("Cannot connect database")

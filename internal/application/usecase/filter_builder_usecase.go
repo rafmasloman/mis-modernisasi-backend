@@ -15,6 +15,7 @@ type FilterBuilderUsecase struct {
 
 type FilterBuilderUsecaseImpl interface {
 	CreateFilterBuilder(dto dto.FilterBuilderDTO) error
+	GetAllFilterBuilder() (*[]dto.FilterBuilderResponseDTO, error)
 	GetFilterBuilderByReportId(reportId string) (*[]entity.FilterBuilder, error)
 	DeleteFilterBuilder(id string) error
 	UpdateFilterBuilder(id string, dto dto.FilterBuilderDTO) error
@@ -22,6 +23,32 @@ type FilterBuilderUsecaseImpl interface {
 
 func NewFilterBuilderUsecase(repo repositories.FilterBuilderRepositoryImpl) *FilterBuilderUsecase {
 	return &FilterBuilderUsecase{repo: repo}
+}
+
+func (u *FilterBuilderUsecase) GetAllFilterBuilder() (*[]dto.FilterBuilderResponseDTO, error) {
+	data, err := u.repo.GetAllFilterBuilder()
+
+	if err != nil {
+		return nil, err
+	}
+
+	entities := make([]dto.FilterBuilderResponseDTO, 0, len(*data))
+
+	for _, item := range *data {
+		entities = append(entities, dto.FilterBuilderResponseDTO{
+			Id:       int(item.ID),
+			ReportId: item.ReportId,
+			Name:     item.Name,
+			Query:    item.Query,
+			Title:    item.Title,
+			Type:     item.Type,
+			Required: item.Required,
+			OrderNum: item.OrderNum,
+		})
+	}
+
+	return &entities, nil
+
 }
 
 func (u *FilterBuilderUsecase) CreateFilterBuilder(dto dto.FilterBuilderDTO) error {

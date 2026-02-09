@@ -9,7 +9,8 @@ func RegisterFilterBuilderRoute(r *gin.RouterGroup, controller *http.FilterBuild
 	filterRouter := r.Group("/filter-builder")
 
 	filterRouter.POST("/", controller.CreateFilterBuilder)
-	filterRouter.GET("/reportId", controller.GetFilterBuilderByReportId)
+	filterRouter.GET("/:reportId", controller.GetFilterBuilderByReportId)
+	filterRouter.GET("/", controller.GetAllFilterBuilder)
 	filterRouter.PUT("/:id", controller.UpdateFilterBuilder)
 	filterRouter.DELETE("/:id", controller.DeleteFilterBuilder)
 

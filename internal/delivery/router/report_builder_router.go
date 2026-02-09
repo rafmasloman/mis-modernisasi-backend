@@ -8,7 +8,7 @@ import (
 func RegisterReportBuilderRoute(r *gin.RouterGroup, controller *http.ReportBuilderController) {
 	reportRouter := r.Group("/report-builder")
 
-	reportRouter.GET("/router-name", controller.GetReportByRouterName)
+	reportRouter.GET("/:routeName", controller.GetReportByRouterName)
 	reportRouter.GET("/", controller.GetAllReportBuilder)
 	reportRouter.POST("/", controller.CreateReportBuilder)
 	reportRouter.PUT("/:id", controller.UpdateReportBuilder)
