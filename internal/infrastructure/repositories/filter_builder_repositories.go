@@ -8,11 +8,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type FilterBuilderRepository struct {
+type FilterBuilderRepositoryImpl struct {
 	db *gorm.DB
 }
 
-type FilterBuilderRepositoryImpl interface {
+type FilterBuilderRepository interface {
 	CreateFilterBuilder(item entity.FilterBuilder) error
 	GetAllFilterBuilder() (*[]entity.FilterBuilder, error)
 	GetFilterBuilderByReportId(reportId int) (*[]entity.FilterBuilder, error)
@@ -20,11 +20,11 @@ type FilterBuilderRepositoryImpl interface {
 	UpdateFilterBuilder(id int, item entity.FilterBuilder) error
 }
 
-func NewFilterBuilderRepository(db *gorm.DB) *FilterBuilderRepository {
-	return &FilterBuilderRepository{db: db}
+func NewFilterBuilderRepository(db *gorm.DB) FilterBuilderRepository {
+	return &FilterBuilderRepositoryImpl{db: db}
 }
 
-func (r *FilterBuilderRepository) GetAllFilterBuilder() (*[]entity.FilterBuilder, error) {
+func (r *FilterBuilderRepositoryImpl) GetAllFilterBuilder() (*[]entity.FilterBuilder, error) {
 	var model []model.FilterBuilderModel
 
 	if err := r.db.Table(`filter_builder`).Find(&model).Error; err != nil {
@@ -49,7 +49,7 @@ func (r *FilterBuilderRepository) GetAllFilterBuilder() (*[]entity.FilterBuilder
 	return &entities, nil
 }
 
-func (r *FilterBuilderRepository) CreateFilterBuilder(item entity.FilterBuilder) error {
+func (r *FilterBuilderRepositoryImpl) CreateFilterBuilder(item entity.FilterBuilder) error {
 
 	reportData := model.FilterBuilderModel{
 		Name:     item.Name,
@@ -68,7 +68,7 @@ func (r *FilterBuilderRepository) CreateFilterBuilder(item entity.FilterBuilder)
 	return nil
 }
 
-func (r *FilterBuilderRepository) GetFilterBuilderByReportId(reportId int) (*[]entity.FilterBuilder, error) {
+func (r *FilterBuilderRepositoryImpl) GetFilterBuilderByReportId(reportId int) (*[]entity.FilterBuilder, error) {
 	var model []model.FilterBuilderModel
 
 	if err := r.db.Table(`filter_builder`).
@@ -95,7 +95,7 @@ func (r *FilterBuilderRepository) GetFilterBuilderByReportId(reportId int) (*[]e
 	return &entities, nil
 }
 
-func (r *FilterBuilderRepository) DeleteFilterBuilder(id int) error {
+func (r *FilterBuilderRepositoryImpl) DeleteFilterBuilder(id int) error {
 	var model model.FilterBuilderModel
 
 	if err := r.db.Where(`id = ?`, id).
@@ -106,7 +106,7 @@ func (r *FilterBuilderRepository) DeleteFilterBuilder(id int) error {
 	return nil
 }
 
-func (r *FilterBuilderRepository) UpdateFilterBuilder(id int, item entity.FilterBuilder) error {
+func (r *FilterBuilderRepositoryImpl) UpdateFilterBuilder(id int, item entity.FilterBuilder) error {
 	var filterBuilder model.FilterBuilderModel
 
 	payloadUpdate := model.FilterBuilderModel{

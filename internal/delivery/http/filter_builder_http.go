@@ -8,14 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/dto"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/usecase"
+	responseHelpers "github.com/rafmasloman/mis-modernisasi-backend/internal/delivery/helpers"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/shared/helpers"
 )
 
 type FilterBuilderController struct {
-	usecase usecase.FilterBuilderUsecaseImpl
+	usecase usecase.FilterBuilderUsecase
 }
 
-func NewFilterBuilderController(usecase usecase.FilterBuilderUsecaseImpl) *FilterBuilderController {
+func NewFilterBuilderController(usecase usecase.FilterBuilderUsecase) *FilterBuilderController {
 	return &FilterBuilderController{usecase: usecase}
 }
 
@@ -47,16 +48,11 @@ func (c *FilterBuilderController) GetAllFilterBuilder(ctx *gin.Context) {
 
 func (c *FilterBuilderController) CreateFilterBuilder(ctx *gin.Context) {
 	var payload dto.FilterBuilderDTO
-	response := new(dto.ApiResponseDTO)
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ApiResponseDTO{
-			ResponseCode: http.StatusBadRequest,
-			Status:       false,
-			Message:      helpers.ErrFailedToCreateReport,
-			Data:         nil,
-			Timestamp:    time.Now(),
-		})
+		responseHelpers.NewResponse(ctx).
+			Error(http.StatusBadRequest, helpers.ErrFailedFilterPayload).
+			Send()
 
 		return
 	}
@@ -64,24 +60,17 @@ func (c *FilterBuilderController) CreateFilterBuilder(ctx *gin.Context) {
 	err := c.usecase.CreateFilterBuilder(payload)
 
 	if err != nil {
-		response.Data = nil
-		response.ResponseCode = http.StatusBadGateway
-		response.Status = false
-		response.Message = helpers.ErrFailedToCreateFilter
-		response.Timestamp = time.Now()
-
-		ctx.JSON(http.StatusBadGateway, response)
+		statusCode, message := responseHelpers.MapErrorToHttpStatus(err)
+		responseHelpers.NewResponse(ctx).
+			Error(statusCode, message).
+			Send()
 
 		return
 	}
 
-	response.Data = nil
-	response.ResponseCode = http.StatusOK
-	response.Status = true
-	response.Message = "Success to create filter builder"
-	response.Timestamp = time.Now()
-
-	ctx.JSON(http.StatusOK, response)
+	responseHelpers.NewResponse(ctx).
+		Success("Success to create filter builder").
+		Send()
 }
 
 func (c *FilterBuilderController) GetFilterBuilderByReportId(ctx *gin.Context) {

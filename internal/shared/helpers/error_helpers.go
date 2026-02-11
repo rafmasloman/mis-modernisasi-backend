@@ -11,3 +11,6 @@ const ErrFailedToGetFilterByReportId = "failed to get filter by report id %v"
 const ErrFailedToCreateFilter = "failed to create filter %v"
 const ErrFailedToUpdateFilter = "failed to update filter %v"
 const ErrFailedToDeleteFilter = "failed to delete filter %v"
+
+// Payload Error
+const ErrFailedFilterPayload = "invalid request payload data"

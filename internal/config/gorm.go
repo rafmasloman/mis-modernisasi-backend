@@ -30,20 +30,25 @@ func GormApp() (*gorm.DB, error) {
 
 	var err error
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: dbLogger})
-
-	// Migrate DB
-
-	MigrateGorm(db)
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{Logger: dbLogger, DisableForeignKeyConstraintWhenMigrating: true})
 
 	if err != nil {
 		panic("Cannot connect database")
 	}
 
+	// Migrate DB
+
+	MigrateGorm(db)
+
 	return db, nil
 }
 
 func MigrateGorm(db *gorm.DB) {
-	db.AutoMigrate(&model.ReportBuilderModel{},
+
+	err := db.AutoMigrate(&model.ReportBuilderModel{},
 		&model.FilterBuilderModel{})
+
+	if err != nil {
+		log.Fatal(err)
+	}
 }

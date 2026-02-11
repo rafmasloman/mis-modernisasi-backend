@@ -10,11 +10,11 @@ import (
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/infrastructure/repositories"
 )
 
-type ReportBuilderUsecase struct {
-	repo repositories.ReportBuilderRepositoryImpl
+type ReportBuilderUsecaseImpl struct {
+	repo repositories.ReportBuilderRepository
 }
 
-type ReportBuilderUsecaseImpl interface {
+type ReportBuilderUsecase interface {
 	CreateReportBuilder(dto dto.DTOCreateReportBuilder) error
 	GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error)
 	DeleteReport(reportId string) error
@@ -22,11 +22,11 @@ type ReportBuilderUsecaseImpl interface {
 	GetAllReportBuilder() (*[]dto.DTOReportBuilderResponse, error)
 }
 
-func NewReportBuilderUsecase(repo repositories.ReportBuilderRepositoryImpl) *ReportBuilderUsecase {
-	return &ReportBuilderUsecase{repo: repo}
+func NewReportBuilderUsecase(repo repositories.ReportBuilderRepository) ReportBuilderUsecase {
+	return &ReportBuilderUsecaseImpl{repo: repo}
 }
 
-func (u *ReportBuilderUsecase) CreateReportBuilder(dto dto.DTOCreateReportBuilder) error {
+func (u *ReportBuilderUsecaseImpl) CreateReportBuilder(dto dto.DTOCreateReportBuilder) error {
 
 	q := strings.ToLower(dto.Query)
 
@@ -57,7 +57,7 @@ func (u *ReportBuilderUsecase) CreateReportBuilder(dto dto.DTOCreateReportBuilde
 
 }
 
-func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]dto.DTOReportBuilderResponse, error) {
+func (u *ReportBuilderUsecaseImpl) GetAllReportBuilder() (*[]dto.DTOReportBuilderResponse, error) {
 
 	data, err := u.repo.GetAllReportBuilder()
 
@@ -83,7 +83,7 @@ func (u *ReportBuilderUsecase) GetAllReportBuilder() (*[]dto.DTOReportBuilderRes
 
 }
 
-func (u *ReportBuilderUsecase) GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error) {
+func (u *ReportBuilderUsecaseImpl) GetReportByRouterName(routerName string) (*dto.DTOReportBuilderResponse, error) {
 	result, err := u.repo.GetReportByRouterName(routerName)
 
 	if err != nil {
@@ -105,7 +105,7 @@ func (u *ReportBuilderUsecase) GetReportByRouterName(routerName string) (*dto.DT
 	return &mappingToResponse, nil
 }
 
-func (u *ReportBuilderUsecase) DeleteReport(reportId string) error {
+func (u *ReportBuilderUsecaseImpl) DeleteReport(reportId string) error {
 
 	convertReportId, err := strconv.Atoi(reportId)
 
@@ -120,7 +120,7 @@ func (u *ReportBuilderUsecase) DeleteReport(reportId string) error {
 	return nil
 }
 
-func (u *ReportBuilderUsecase) UpdateReport(reportId string, dto dto.DTOCreateReportBuilder) error {
+func (u *ReportBuilderUsecaseImpl) UpdateReport(reportId string, dto dto.DTOCreateReportBuilder) error {
 
 	convertReportId, err := strconv.Atoi(reportId)
 

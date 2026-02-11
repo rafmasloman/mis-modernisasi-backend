@@ -12,10 +12,10 @@ import (
 )
 
 type ReportBuilderController struct {
-	usecase usecase.ReportBuilderUsecaseImpl
+	usecase usecase.ReportBuilderUsecase
 }
 
-func NewReportBuilderController(usecase usecase.ReportBuilderUsecaseImpl) *ReportBuilderController {
+func NewReportBuilderController(usecase usecase.ReportBuilderUsecase) *ReportBuilderController {
 	return &ReportBuilderController{usecase: usecase}
 }
 

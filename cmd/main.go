@@ -33,8 +33,10 @@ func main() {
 
 	v1 := r.Group("/api/v1/mis-new")
 
-	core.RegisterReportBuilderCore(v1, db)
-	core.RegisterFilterBuilderCore(v1, db)
+	container := core.NewRepositoryContainer(db)
+
+	core.RegisterReportBuilderCore(v1, db, container)
+	core.RegisterFilterBuilderCore(v1, db, container)
 
 	AppHost := os.Getenv("APP_HOST")
 	AppPort := os.Getenv("APP_PORT")

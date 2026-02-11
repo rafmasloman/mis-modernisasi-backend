@@ -9,6 +9,11 @@ type FilterBuilder struct {
 	Query    string
 	ReportId int
 	Type     string
+	Value    string
+	Label    string
+	Api      string
 	Required bool
 	OrderNum int
+	OnLoad   bool
+	OnChange string
 }
