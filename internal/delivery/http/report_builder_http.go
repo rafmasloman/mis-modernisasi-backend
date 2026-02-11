@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/dto"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/application/usecase"
+	responseHelpers "github.com/rafmasloman/mis-modernisasi-backend/internal/delivery/helpers"
 	"github.com/rafmasloman/mis-modernisasi-backend/internal/shared/helpers"
 )
 
@@ -21,17 +22,12 @@ func NewReportBuilderController(usecase usecase.ReportBuilderUsecase) *ReportBui
 
 func (c *ReportBuilderController) CreateReportBuilder(ctx *gin.Context) {
 	var payload dto.DTOCreateReportBuilder
-	response := new(dto.ApiResponseDTO)
 
 	if err := ctx.ShouldBindJSON(&payload); err != nil {
-		ctx.JSON(http.StatusBadRequest, dto.ApiResponseDTO{
-			ResponseCode: http.StatusBadRequest,
-			Status:       false,
-			Message:      helpers.ErrFailedToCreateReport,
-			Data:         nil,
-			Timestamp:    time.Now(),
-			Error:        err.Error(),
-		})
+		log.Println("create report : %v ", err)
+
+		responseHelpers.NewResponse(ctx).
+			Error(http.StatusBadRequest, helpers.ErrFailedToCreateReport).Send()
 
 		return
 	}
@@ -40,25 +36,18 @@ func (c *ReportBuilderController) CreateReportBuilder(ctx *gin.Context) {
 
 	if err != nil {
 		log.Println("create report : %v ", err)
-		response.Data = nil
-		response.ResponseCode = http.StatusBadGateway
-		response.Status = false
-		response.Message = helpers.ErrFailedToCreateReport
-		response.Timestamp = time.Now()
-		response.Error = err.Error()
 
-		ctx.JSON(http.StatusBadGateway, response)
+		responseHelpers.NewResponse(ctx).
+			Error(http.StatusBadGateway, helpers.ErrFailedToCreateReport).
+			Send()
 
 		return
 	}
 
-	response.Data = nil
-	response.ResponseCode = http.StatusOK
-	response.Status = true
-	response.Message = "Success to create report"
-	response.Timestamp = time.Now()
+	responseHelpers.NewResponse(ctx).
+		Success("Success to create report").
+		Send()
 
-	ctx.JSON(http.StatusOK, response)
 }
 
 func (c *ReportBuilderController) GetAllReportBuilder(ctx *gin.Context) {
