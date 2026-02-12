@@ -12,5 +12,8 @@ const ErrFailedToCreateFilter = "failed to create filter %v"
 const ErrFailedToUpdateFilter = "failed to update filter %v"
 const ErrFailedToDeleteFilter = "failed to delete filter %v"
 
+const ErrFailedToGetKonven = "failed to get konven %v"
+const ErrFailedToGetRegion = "failed to get region %v"
+
 // Payload Error
 const ErrFailedFilterPayload = "invalid request payload data"

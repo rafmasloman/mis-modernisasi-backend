@@ -35,6 +35,7 @@ func main() {
 
 	container := core.NewRepositoryContainer(db)
 
+	core.RegisterLookupBranchCore(v1, container)
 	core.RegisterReportBuilderCore(v1, db, container)
 	core.RegisterFilterBuilderCore(v1, db, container)
 
